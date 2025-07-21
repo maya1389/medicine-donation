@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#7b1fa2">
+  
+</script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>سامانه اهدای دارو</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
+
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: linear-gradient(135deg, #4A90E2 0%, #50E3C2 100%);
+    color: #fff;
+    padding: 20px;
+    direction: rtl;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  .header h1 {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 2.8rem;
+    margin: 0;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .header .datetime {
+    font-size: 16px;
+    margin-top: 5px;
+    color: #e0f7fa;
+  }
+  form {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 25px 30px;
+    margin: 20px auto;
+    max-width: 720px;
+    border-radius: 15px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25);
+    color: #e0f7fa;
+  }
+  input, select, textarea, button {
+    width: 100%;
+    padding: 14px 15px;
+    margin: 12px 0;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+  input, select, textarea {
+    background: rgba(255, 255, 255, 0.15);
+    color: #e0f7fa;
+  }
+  input::placeholder, textarea::placeholder {
+    color: #cce9e7;
+  }
+  button {
+    background-color: #00bfa5;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0, 191, 165, 0.6);
+  }
+  button:hover {
+    background-color: #00796b;
+  }
+  select option {
+    color: #000;
+  }
+  .hidden {
+    display: none;
+  }
+  .highlight-box {
+    background-color: rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    color: #cce9e7;
+  }
+  .user-info {
+    font-size: 0.9rem;
+    color: #b0e0de;
+  }
+  img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+    box-shadow: 0 0 10px rgba(0,191,165,0.5);
+  }
+</style>
+</head>
+<body>
+  <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+    <svg width="80" height="80" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <!-- قلب -->
+      <path d="M32 58s-16-10.5-24-21C-2 20 14 4 32 20 50 4 66 20 56 37c-8 10.5-24 21-24 21z" fill="#e53935"/>
+      
+      <!-- کپسول دارو -->
+      <g transform="rotate(-30 32 32)">
+        <rect x="22" y="25" rx="4" ry="4" width="20" height="12" fill="#4caf50"/>
+        <rect x="22" y="25" rx="4" ry="4" width="10" height="12" fill="#ffffff" opacity="0.9"/>
+      </g>
+  
+      <!-- چسب زخم -->
+      <g transform="rotate(45 32 32)">
+        <rect x="27" y="27" width="10" height="10" rx="2" fill="#ffcc80" stroke="#fb8c00" stroke-width="1"/>
+        <circle cx="32" cy="32" r="1" fill="#fb8c00"/>
+      </g>
+    </svg>
+  </div>
+  
+<div class="header">
+  <h1>سامانه اهدای دارو</h1>
+  <div class="datetime" id="datetime">در حال بارگذاری زمان...</div>
+</div>
+
+<!-- فرم ثبت نام و انتخاب نقش -->
+<form id="registerForm">
+  <label for="roleSelect">نقش خود را انتخاب کنید:</label>
+  <select id="roleSelect" required>
+    <option value="">-- انتخاب نقش --</option>
+    <option value="donor">اهداکننده</option>
+    <option value="receiver">گیرنده</option>
+    <option value="admin">مدیر</option>
+  </select>
+
+  <div id="adminLoginDiv" class="hidden" style="margin-top:10px;">
+    <label for="adminUsername">نام کاربری مدیر:</label>
+    <input type="text" id="adminUsername" placeholder="نام کاربری مدیر" />
+    <label for="adminPassword">رمز عبور مدیر:</label>
+    <input type="password" id="adminPassword" placeholder="رمز عبور مدیر" />
+    <button type="button" id="adminLoginBtn">ورود مدیر</button>
+  </div>
+
+  <label for="fullName">نام و نام خانوادگی:</label>
+  <input type="text" id="fullName" required placeholder="نام و نام خانوادگی خود را وارد کنید" />
+
+  <label for="phone">شماره تلفن همراه:</label>
+  <input type="tel" id="phone" required placeholder="مثلا 09121234567" />
+
+  <label for="email">ایمیل:</label>
+  <input type="email" id="email" required placeholder="example@example.com" />
+
+  <button type="submit" id="registerBtn">ثبت نام</button>
+</form>
+
+<!-- فرم اهداکننده -->
+<form id="donorForm" class="hidden">
+  <h3>فرم ثبت دارو توسط اهداکننده</h3>
+  <label for="drugName">نام دارو:</label>
+  <input type="text" id="drugName" required placeholder="نام دارو" />
+
+  <label for="drugDose">دوز:</label>
+  <input type="text" id="drugDose" required placeholder="مثلا ۵۰۰ میلی‌گرم" />
+
+  <label for="expiryDate">تاریخ انقضا:</label>
+  <input type="date" id="expiryDate" required />
+
+  <label for="condition">وضعیت دارو:</label>
+  <input type="text" id="condition" required placeholder="مثلا سالم، باز نشده" />
+
+  <label for="drugImage">تصویر دارو:</label>
+  <input type="file" id="drugImage" accept="image/*" required />
+  <div id="imagePreview"></div>
+
+  <button type="submit">ارسال دارو برای بررسی مدیر</button>
+</form>
+
+<!-- فرم گیرنده -->
+<form id="receiverForm" class="hidden">
+  <h3>درخواست دارو توسط گیرنده</h3>
+  <label for="drugListSelect">داروهای موجود:</label>
+  <select id="drugListSelect">
+    <option value="">-- انتخاب دارو --</option>
+  </select>
+
+  <label for="receiverAddress">آدرس گیرنده:</label>
+  <textarea id="receiverAddress" rows="3" required placeholder="آدرس خود را وارد کنید"></textarea>
+
+  <button type="submit">درخواست دارو</button>
+</form>
+
+<!-- پنل مدیریت -->
+<div id="adminPanel" class="hidden">
+  <h3>پنل مدیریت</h3>
+  <h4>داروهای تایید نشده</h4>
+  <ul id="pendingDrugsList"></ul>
+
+  <h4>لیست کاربران ثبت‌نام شده</h4>
+  <ul id="usersList"></ul>
+</div>
+
+<script>
+  const datetimeElement = document.getElementById('datetime');
+  const roleSelect = document.getElementById('roleSelect');
+  const registerForm = document.getElementById('registerForm');
+  const adminLoginDiv = document.getElementById('adminLoginDiv');
+  const adminLoginBtn = document.getElementById('adminLoginBtn');
+  const donorForm = document.getElementById('donorForm');
+  const receiverForm = document.getElementById('receiverForm');
+  const adminPanel = document.getElementById('adminPanel');
+  const fullNameInput = document.getElementById('fullName');
+  const phoneInput = document.getElementById('phone');
+  const emailInput = document.getElementById('email');
+  const drugNameInput = document.getElementById('drugName');
+  const drugDoseInput = document.getElementById('drugDose');
+  const expiryDateInput = document.getElementById('expiryDate');
+  const conditionInput = document.getElementById('condition');
+  const drugImageInput = document.getElementById('drugImage');
+  const imagePreview = document.getElementById('imagePreview');
+  const drugListSelect = document.getElementById('drugListSelect');
+  const receiverAddressInput = document.getElementById('receiverAddress');
+  const pendingDrugsList = document.getElementById('pendingDrugsList');
+  const usersList = document.getElementById('usersList');
+
+  let users = JSON.parse(localStorage.getItem('users')) || [];
+  let unapprovedDrugs = JSON.parse(localStorage.getItem('unapprovedDrugs')) || [];
+  let approvedDrugs = JSON.parse(localStorage.getItem('approvedDrugs')) || [];
+
+  let currentUser = null;
+  let currentRole = null;
+
+  // به‌روزرسانی تاریخ و زمان
+  function updateDateTime() {
+    const now = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+    datetimeElement.textContent = now.toLocaleDateString('fa-IR', options);
+  }
+  setInterval(updateDateTime, 1000);
+  updateDateTime();
+
+  // تغییر نمایش فرم بر اساس نقش انتخابی
+  roleSelect.addEventListener('change', () => {
+    const role = roleSelect.value;
+    currentRole = role;
+    // نمایش/عدم نمایش فرم ورود مدیر
+    if(role === 'admin') {
+      adminLoginDiv.classList.remove('hidden');
+      donorForm.classList.add('hidden');
+      receiverForm.classList.add('hidden');
+      adminPanel.classList.add('hidden');
+      registerForm.querySelector('button[type="submit"]').disabled = true; // غیر فعال ثبت نام برای مدیر (فعلا)
+    } else {
+      adminLoginDiv.classList.add('hidden');
+      donorForm.classList.add('hidden');
+      receiverForm.classList.add('hidden');
+      adminPanel.classList.add('hidden');
+      registerForm.querySelector('button[type="submit"]').disabled = false;
+    }
+  });
+
+  // مدیریت ورود مدیر
+  adminLoginBtn.addEventListener('click', () => {
+    const username = document.getElementById('adminUsername').value.trim();
+    const password = document.getElementById('adminPassword').value.trim();
+    if(username === 'superadmin' && password === 'supersecret2025') {
+      alert('ورود مدیر با موفقیت انجام شد.');
+      adminPanel.classList.remove('hidden');
+      adminLoginDiv.classList.add('hidden');
+      registerForm.classList.add('hidden');
+      roleSelect.disabled = true;
+      donorForm.classList.add('hidden');
+      receiverForm.classList.add('hidden');
+      renderPendingDrugs();
+      renderUsersList();
+    } else {
+      alert('نام کاربری یا رمز عبور مدیر اشتباه است.');
+    }
+  });
+
+  // ثبت نام کاربر (اهداکننده و گیرنده)
+  registerForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = fullNameInput.value.trim();
+    const phone = phoneInput.value.trim();
+    const email = emailInput.value.trim();
+    if(!name || !phone || !email || !currentRole || currentRole === 'admin') {
+      alert('لطفاً تمام فیلدها را به درستی پر کنید و نقش مدیر قابل ثبت نام نیست.');
+      return;
+    }
+    currentUser = {name, phone, email, role: currentRole};
+    users.push(currentUser);
+    localStorage.setItem('users', JSON.stringify(users));
+    alert('ثبت نام با موفقیت انجام شد.');
+    registerForm.reset();
+
+    if(currentRole === 'donor') {
+      donorForm.classList.remove('hidden');
+      receiverForm.classList.add('hidden');
+    } else if(currentRole === 'receiver') {
+      receiverForm.classList.remove('hidden');
+      donorForm.classList.add('hidden');
+      updateDrugList();
+    }
+  });
+
+  // پیش نمایش تصویر دارو در فرم اهداکننده
+  drugImageInput.addEventListener('change', () => {
+    const file = drugImageInput.files[0];
+    if(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        imagePreview.innerHTML = `<img src="${reader.result}" alt="تصویر دارو" />`;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // ارسال دارو توسط اهداکننده
+  donorForm.addEventListener('submit', e => {
+    e.preventDefault();
+    if(!currentUser || currentUser.role !== 'donor') {
+      alert('لطفا ابتدا ثبت نام کنید.');
+      return;
+    }
+    const drug = {
+      id: Date.now(),
+      name: drugNameInput.value.trim(),
+      dose: drugDoseInput.value.trim(),
+      expiry: expiryDateInput.value,
+      condition: conditionInput.value.trim(),
+      image: imagePreview.innerHTML,
+      donorInfo: currentUser
+    };
+    unapprovedDrugs.push(drug);
+    localStorage.setItem('unapprovedDrugs', JSON.stringify(unapprovedDrugs));
+    alert('دارو برای تایید مدیر ارسال شد.');
+    donorForm.reset();
+    imagePreview.innerHTML = '';
+  });
+
+  // به‌روزرسانی لیست داروهای تایید شده در فرم گیرنده
+  function updateDrugList() {
+    drugListSelect.innerHTML = '<option value="">-- انتخاب دارو --</option>';
+    approvedDrugs.forEach((drug, index) => {
+      const opt = document.createElement('option');
+      opt.value = drug.id;
+      opt.textContent = `${drug.name} (${drug.dose})`;
+      drugListSelect.appendChild(opt);
+    });
+  }
+
+  // درخواست دارو توسط گیرنده
+  receiverForm.addEventListener('submit', e => {
+    e.preventDefault();
+    if(!currentUser || currentUser.role !== 'receiver') {
+      alert('لطفا ابتدا ثبت نام کنید.');
+      return;
+    }
+    const selectedDrugId = drugListSelect.value;
+    const address = receiverAddressInput.value.trim();
+    if(!selectedDrugId || !address) {
+      alert('لطفا دارو و آدرس را انتخاب کنید.');
+      return;
+    }
+    const selectedDrug = approvedDrugs.find(d => d.id == selectedDrugId);
+    if(!selectedDrug) {
+      alert('داروی انتخاب شده معتبر نیست.');
+      return;
+    }
+
+    // ارسال اطلاعات به مدیر: با استفاده از localStorage می‌تونیم ذخیره کنیم درخواست گیرنده رو
+    if(!selectedDrug.requests) selectedDrug.requests = [];
+    selectedDrug.requests.push({
+      receiverInfo: currentUser,
+      address,
+      date: new Date().toLocaleString('fa-IR')
+    });
+    localStorage.setItem('approvedDrugs', JSON.stringify(approvedDrugs));
+    alert(`درخواست دارو (${selectedDrug.name}) توسط شما ثبت شد. مدیر بررسی خواهد کرد.`);
+    receiverForm.reset();
+  });
+
+  // نمایش داروهای تایید نشده در پنل مدیریت
+  function renderPendingDrugs() {
+    pendingDrugsList.innerHTML = '';
+    if(unapprovedDrugs.length === 0) {
+      pendingDrugsList.innerHTML = '<li>در حال حاضر داروی تایید نشده‌ای وجود ندارد.</li>';
+      return;
+    }
+    unapprovedDrugs.forEach((drug, idx) => {
+      const li = document.createElement('li');
+      li.classList.add('highlight-box');
+      li.innerHTML = `
+        <strong>${drug.name}</strong> - ${drug.dose} - انقضا: ${drug.expiry} - وضعیت: ${drug.condition}
+        <br>${drug.image}
+        <br><span class="user-info">اهداکننده: ${drug.donorInfo.name}، تلفن: ${drug.donorInfo.phone}، ایمیل: ${drug.donorInfo.email}</span>
+        <br><button onclick="approveDrug(${idx})" style="margin-top:8px;">تایید دارو</button>
+      `;
+      pendingDrugsList.appendChild(li);
+    });
+  }
+
+  // تایید دارو توسط مدیر
+  function approveDrug(index) {
+    const drug = unapprovedDrugs[index];
+    approvedDrugs.push(drug);
+    unapprovedDrugs.splice(index, 1);
+    localStorage.setItem('approvedDrugs', JSON.stringify(approvedDrugs));
+    localStorage.setItem('unapprovedDrugs', JSON.stringify(unapprovedDrugs));
+    renderPendingDrugs();
+    updateDrugList();
+    alert('دارو تایید شد و به لیست داروهای قابل انتخاب اضافه شد.');
+  }
+
+  window.approveDrug = approveDrug; // دسترسی از داخل HTML
+
+  // نمایش لیست کاربران ثبت‌نام شده در پنل مدیریت
+  function renderUsersList() {
+    usersList.innerHTML = '';
+    if(users.length === 0) {
+      usersList.innerHTML = '<li>هیچ کاربری ثبت‌نام نکرده است.</li>';
+      return;
+    }
+    users.forEach(user => {
+      const li = document.createElement('li');
+      li.classList.add('highlight-box');
+      li.innerHTML = `
+        نام: ${user.name} - نقش: ${user.role === 'donor' ? 'اهداکننده' : 'گیرنده'} - تلفن: ${user.phone} - ایمیل: ${user.email}
+      `;
+      usersList.appendChild(li);
+    });
+  }
+
+</script>
+<footer style="position: fixed; bottom: 10px; left: 15px; font-size: 14px; color: #e0f7fa; opacity: 0.9;">
+  نام مؤلف: مایا تاجیک
+</footer>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').then(function (registration) {
+        console.log('ServiceWorker registered:', registration);
+      }, function (err) {
+        console.log('ServiceWorker registration failed:', err);
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
